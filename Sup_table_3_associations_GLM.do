@@ -14,6 +14,16 @@ label var `var'`l' "`vlabel' "
 foreach var in  q1_3_4 sti_screening q1_3_9_1  {
 replace `var'=0 if `var'==.
 }
+***addition post-review: contraception type
+forvalues x=1/6 {
+gen q2_3_1__`x' = q2_3_1==`x'
+}
+replace q2_3_1__3=1 if q2_3_1__4==1
+label var q2_3_1__1 "Baseline contraception: 2-monthly injectable"
+label var q2_3_1__2 "Baseline contraception: 3-monthly injectable"
+label var q2_3_1__3 "Baseline contraception: IUD/implant"
+label var q2_3_1__5 "Baseline contraception: oral pill"
+label var q2_3_1__6 "Baseline contraception: condoms"
 
 gen high_risk_perception =q2_5_1==3
 label var high_risk_perception "high self-reported risk perception"
@@ -39,6 +49,8 @@ duplicates drop study_, force
  
 gen fail= ltfu
 gen fail2=complete!=1
+*update 11 May 2021: make denominator for incomplete study just those who intiated prep
+replace fail2=. if ltfu==.
 gen time=last_attend - q2date
 replace time= 1 if time==0
 stset time, fail(fail2)
@@ -89,7 +101,7 @@ local lb=string(round(exp(b[1,1]-1.96*d[1,1]^0.5),0.1))
 local ub=string(round(exp(b[1,1]+1.96*d[1,1]^0.5),0.1))
 file write prep ",`rd' (`lb'-`ub')"
 }
-foreach var in high_risk_perception q2_6_1 q2_6_2 q2_6_3  hormonal_cxt {
+foreach var in high_risk_perception q2_6_1 q2_6_2 q2_6_3  hormonal_cxt q2_3_1__1 q2_3_1__2 q2_3_1__3 q2_3_1__5 q2_3_1__6  {
 local varname : var label `var'
 file write prep _n"`varname',"
 foreach depvar in ever1 ever4 ever12 ever18 traj_group {
