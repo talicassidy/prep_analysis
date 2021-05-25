@@ -228,6 +228,18 @@ local N=r(N)
 **use adherence data separately
 clear
 use TDF_merged_visits
+** N
+
+count if month==1
+local N1=r(N)
+count if month==4
+local N4=r(N)
+count if month==12
+local N12=r(N)
+count if month==18
+local N18=r(N)
+file write prep _n "  N with results, `N1',`N4',`N12',`N18', N/A"
+
 ** new categories:
 count if tdf_catD==2 & month==1
 local n1=r(N)
@@ -262,6 +274,8 @@ local N=r(N)
 count if tdf_catD==2 & month==18
 local n18=r(N)
 local p18= string(round(100*`n18'/`N',0.1))
+file write prep _n "  High adherence levels (% of tested), `n1' (`p1'%),`n6' (`p6'%),`n12' (`p12'%),`n18' (`p18'%), N/A"
+
 * to add .0 to numbers with no decimals for consistent style
 if strpos("`p1'",".")==0 local p1="`p1'"+".0"
 if strpos("`p6'",".")==0 local p6="`p6'"+".0"
